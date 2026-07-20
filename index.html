@@ -15,6 +15,8 @@
     --ink-soft:#8C82A3;
     --lilac:#D2AFFF;
     --lilac-deep:#8A54D9;
+    --heart-m:#8A54D9;
+    --heart-p:#D97C93;
     --sage:#7FAE96;
     --gold:#D9A85C;
     --line: rgba(59,46,78,0.08);
@@ -60,7 +62,7 @@
     0%{ transform:translateY(0) rotate(var(--rot-start)); opacity:0; }
     12%{ opacity:0.8; }
     88%{ opacity:0.8; }
-    100%{ transform:translateY(-135vh) rotate(var(--rot-end)); opacity:0; }
+    100%{ transform:translateY(var(--travel)) rotate(var(--rot-end)); opacity:0; }
   }
   @media (prefers-reduced-motion: reduce){
     .meme-layer{ display:none; }
@@ -513,12 +515,17 @@
     const duration = 12 + Math.random()*8;       // 12-20s float
     const rotStart = (Math.random()*16 - 8).toFixed(1) + 'deg';
     const rotEnd = (Math.random()*30 - 15).toFixed(1) + 'deg';
+    // Fixed px distance computed once, so mobile browsers resizing the
+    // viewport mid-scroll (address bar show/hide) can't cause the
+    // in-flight animation to jump or stutter.
+    const travelPx = -(window.innerHeight + 320);
 
     img.style.width = size + 'px';
     img.style.left = left + '%';
     img.style.animationDuration = duration + 's';
     img.style.setProperty('--rot-start', rotStart);
     img.style.setProperty('--rot-end', rotEnd);
+    img.style.setProperty('--travel', travelPx + 'px');
 
     layer.appendChild(img);
     setTimeout(()=> img.remove(), duration*1000 + 500);
@@ -536,24 +543,29 @@
     return (idea.votes.Manish||0) + (idea.votes.Palak||0);
   }
 
-  function heartSVG(){
-    return `<svg viewBox="0 0 24 24" fill="var(--lilac-deep)"><path d="M12 21s-7.2-4.6-10-9.3C.4 8.6 2 5 5.6 5c2 0 3.4 1.1 4.4 2.6C11 6.1 12.4 5 14.4 5 18 5 19.6 8.6 22 11.7 19.2 16.4 12 21 12 21z"/></svg>`;
+  function heartSVG(color){
+    return `<svg viewBox="0 0 24 24" fill="${color}"><path d="M12 21s-7.2-4.6-10-9.3C.4 8.6 2 5 5.6 5c2 0 3.4 1.1 4.4 2.6C11 6.1 12.4 5 14.4 5 18 5 19.6 8.6 22 11.7 19.2 16.4 12 21 12 21z"/></svg>`;
   }
 
-  function heartsHTML(n){
-    if(n === 0){
-      return '<span class="no-hearts">no marks yet</span>';
-    }
-    const bundles = Math.floor(n/5);
-    const rem = n % 5;
+  function heartGroupHTML(count, color){
+    if(count <= 0) return '';
+    const bundles = Math.floor(count/5);
+    const rem = count % 5;
     let html = '';
     for(let i=0;i<bundles;i++){
-      html += `<span class="cluster">${heartSVG().repeat(5)}</span>`;
+      html += `<span class="cluster">${heartSVG(color).repeat(5)}</span>`;
     }
     if(rem > 0){
-      html += `<span class="cluster">${heartSVG().repeat(rem)}</span>`;
+      html += `<span class="cluster">${heartSVG(color).repeat(rem)}</span>`;
     }
     return html;
+  }
+
+  function heartsHTML(manishCount, palakCount){
+    if(manishCount === 0 && palakCount === 0){
+      return '<span class="no-hearts">no marks yet</span>';
+    }
+    return heartGroupHTML(manishCount, 'var(--heart-m)') + heartGroupHTML(palakCount, 'var(--heart-p)');
   }
 
   function getSortMode(){
@@ -589,8 +601,8 @@
           <div class="card-main">
             <div class="card-idea">${escapeHTML(idea.text)}</div>
             <div class="card-meta">
-              <span class="hearts">${heartsHTML(total)}</span>
-              <span class="count">${total} ${total===1?'mark':'marks'} &middot; M ${idea.votes.Manish||0} · P ${idea.votes.Palak||0}</span>
+              <span class="hearts">${heartsHTML(idea.votes.Manish||0, idea.votes.Palak||0)}</span>
+              <span class="count">${total} ${total===1?'mark':'marks'} &middot; <span style="color:var(--heart-m)">M ${idea.votes.Manish||0}</span> · <span style="color:var(--heart-p)">P ${idea.votes.Palak||0}</span></span>
               ${isTop ? '<span class="pick-badge">Top pick</span>' : ''}
             </div>
           </div>
