@@ -231,6 +231,58 @@
     color:var(--ink-soft);
   }
   footer span{ color:var(--lilac-deep); font-weight:600; }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 560px){
+    .wrap{ padding:36px 14px 60px; }
+    header{ margin-bottom:28px; }
+    h1{ font-size:32px; }
+    .names{ font-size:13px; padding:0 8px; }
+
+    .entry{
+      flex-wrap:wrap;
+      padding:10px;
+    }
+    .entry input[type=text]{
+      flex:1 1 100%;
+      font-size:16px; /* prevents iOS auto-zoom on focus */
+      padding:10px 8px;
+    }
+    .entry select{
+      flex:1;
+      font-size:13px;
+      padding:10px 8px;
+    }
+    .entry button{
+      flex:0 0 auto;
+      padding:0 20px;
+      font-size:14px;
+    }
+
+    .card{
+      flex-direction:column;
+      align-items:stretch;
+      gap:12px;
+      padding:16px 14px;
+    }
+    .card-idea{ font-size:15.5px; }
+    .card-meta{ gap:8px; }
+
+    .card-actions{
+      flex-direction:row;
+      justify-self: stretch;
+    }
+    .btn{
+      flex:1;
+      text-align:center;
+      padding:10px 12px;
+      font-size:12.5px;
+    }
+    .btn.remove{
+      flex:0 0 auto;
+      padding:10px 14px;
+    }
+  }
 </style>
 </head>
 <body>
